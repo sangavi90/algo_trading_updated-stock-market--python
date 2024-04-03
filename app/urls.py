@@ -1,13 +1,14 @@
 from django.contrib import admin
 from django.urls import path
-from.import views,place_order,get_trade,history,margin,LTP,individual_order,get_order,unique_id
+from.import views,place_order,get_trade,history,margin,LTP,individual_order,get_order,update_order_status
 from .place_order import *
 from .get_trade import *
 from .margin import *
 from .LTP import *
 from .individual_order import *
 from .get_order import *
-from .unique_id import *
+from .update_order_status import *
+
 
 urlpatterns = [
     path('viewdetails/',views.get_details.as_view(),name="viewdeatils"),
@@ -30,7 +31,7 @@ urlpatterns = [
     #############################################################################################################
     path('OrderPlacementAPIView/',place_order.PlaceOrderAPIView.as_view(),name='OrderPlacementAPIView'),
     path("GetOrderBook/",get_order.GetOrderBook.as_view(),name="GetOrderBook"),
-    path("UniqueOrderid/",unique_id.UniqueOrderid.as_view(),name="UniqueOrderid"),
+    path("ProfitLossAPIView/",history.ProfitLossAPIView.as_view(),name="ProfitLossAPIView"),
     path('IndividualOrderStatus/<str:uniqueorderid>/',individual_order.IndividualOrderStatus.as_view(),name='IndividualOrderStatus'),
     path('multiple_legs/',views.MultipleLegs.as_view(),name="multiple_legs"),
     path('MarginCalculatorAPI/',margin.MarginCalculatorAPI.as_view(),name="MarginCalculatorAPI"),
@@ -38,7 +39,7 @@ urlpatterns = [
     path("Option_Data_CEPE/<str:company_name>/",margin.Option_Data_CEPE.as_view(),name="Option_Data_CEPE"),
     path("RetrieveLegFields/",views.RetrieveLegFields.as_view(),name="RetrieveLegFields"),
     path("StrategyView/",views.StrategyView.as_view(),name="StrategyView"),
-    path("RetrieveStrategyByUserId/",views.RetrieveStrategyByUserId.as_view(),name="RetrieveStrategyByUserId"),
+    path("RetrieveStrategyByUserId/",views.RetrieveStrategyByUserId.as_view(),name="RetrieveStrategyByUserId"),#Here all data is sent to frontend
     ################Authentication#########################################
     path("SignInUserAPIView/",views.SignInUserAPIView.as_view(),name="SignInUserAPIView"),
     path("EmailverifyOTP/",views.EmailverifyOTP.as_view(),name="EmailverifyOTP"),
@@ -51,5 +52,7 @@ urlpatterns = [
     path("Expiry_CEPEonly/",margin.Expiry_CEPEonly.as_view(),name="Expiry_CEPEonly"),
     path('Userdetails/',views.user_details.as_view(),name='Userdetails'),
     path('StatusApiview/',views.status_view.as_view(),name='status_view'),
+    #########################To update order status###########
+    path('Updateorder/',update_order_status.update_order.as_view(),name="update_order")
 
 ]

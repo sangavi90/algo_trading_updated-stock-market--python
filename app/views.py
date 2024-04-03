@@ -123,8 +123,8 @@ class real_time_data(APIView):
         # 'X-PrivateKey': api_key,
         # 'Accept': 'application/json',
         # 'X-SourceID': 'WEB',
-        # 'X-ClientLocalIP': XClientLocalIP,
-        # 'X-ClientPublicIP': ClientPublicIP,
+        # 'X-ClientLocalIP': "192.168.0.103",
+        # 'X-ClientPublicIP': "49.205.145.221",
         # 'X-MACAddress': MACAddress,
         # 'X-UserType': 'USER',
         # 'Authorization': jwt_token,
@@ -571,7 +571,7 @@ class NSE_Tradingsymbol_token(APIView):
         
 from .models import Strategy
 from .serializers import StrategySerializer
-
+####################################### store the Strategy and leg in database by getting user_id and strategy:#####################################
 class StrategyView(APIView):  
     def post(self, request):
 
@@ -614,7 +614,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Strategy, Leg
-
+#######################################based on strategy name it sends all leg details:##############################
 class RetrieveLegFields(APIView):
     def get(self, request):
         # Retrieve all strategies from the database
@@ -692,7 +692,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Strategy, Leg
 from .serializers import StrategySerializer, LegSerializer
-
+####################################based on  user_id it sends all the strategy and also legs under the strategy#################################
 class RetrieveStrategyByUserId(APIView):
     def post(self, request):
         try:
@@ -735,7 +735,7 @@ class user_details(APIView):
 
         return Response({'message': 'Login successful', 'user': serializer.data})
 
-
+############# based on status="active" order get place and also store unique order id in leg database:##########################
 class status_view(APIView):
     def post(self,request):
         user_id=request.data.get('user_id')
@@ -790,7 +790,7 @@ class status_view(APIView):
                             "symboltoken": leg.symboltoken,
                             "transactiontype": leg.transactiontype.upper(),
                             "exchange":leg.exchange,
-                            "ordertype":'LIMIT',
+                            "ordertype":leg.ordertype,
                             "producttype": leg.producttype,
                             "duration": leg.duration,
                             "price": leg.price,
@@ -837,7 +837,9 @@ class status_view(APIView):
                         print("Order ID:", orderid)
                         print("Unique Order ID:", uniqueorderid)
 
-
+                        leg.orderid=orderid
+                        leg.uniqueorderid=uniqueorderid
+                        leg.save()
 
                         conn.request("GET", "/rest/secure/angelbroking/order/v1/details/" + uniqueorderid, "", headers)
 
@@ -845,7 +847,11 @@ class status_view(APIView):
                         o_data = res.read().decode("utf-8")
                         
 
-                        order_data.append(json.loads(o_data))
+                        order_data.append({
+                            'message': 'Order placed successfully',
+                            'uniqueorderid': uniqueorderid,
+                            "order_data":json.loads(o_data)
+                            })
                 else:
                      # Handle HTTP errors
                      print("HTTP Error:", res.status)
